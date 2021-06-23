@@ -12,7 +12,8 @@ import {
   MatListModule,
   MatSliderModule,
   MatCheckboxModule,
-  MatSidenavModule } from '@angular/material';
+  MatSidenavModule, MatMenuModule
+} from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -37,7 +38,8 @@ import { ProductDetailComponent } from './product-detail/product-detail.componen
     MatCheckboxModule,
     MatSidenavModule,
     FormsModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    MatMenuModule
   ],
   declarations: [
   ProductsComponent,

@@ -20,7 +20,8 @@ export const AppRoutes: Routes = [{
   }, {
     path: 'question-answer',
     loadChildren: './question-answer/question-answer.module#QuestionAnswerModule'
-  }, {
+  },
+    {
     path: 'ecommerce',
     loadChildren: './ecommerce/ecommerce.module#EcommerceModule'
   }, {

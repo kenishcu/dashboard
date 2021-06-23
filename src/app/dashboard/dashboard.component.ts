@@ -1,193 +1,57 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {
-  card1;
-  card2;
-  card3;
+export class DashboardComponent implements OnInit{
 
+  minDate: Date;
+  maxDate: Date;
+  minDateString: String;
+  maxDateString: String;
+  currentProjectUrl: String;
+
+  touch: boolean;
   rows = [];
-
+  inputDisabled: boolean;
+  datepickerDisabled: boolean;
+  dateTimeVariable: String;
   // Shared chart options
-  globalChartOptions: any = {
-    responsive: true,
-    legend: {
-      display: false,
-      position: 'bottom'
-    }
-  };
-
-  // Bar
-  barChartLabels: string[] = ['1', '2', '3', '4', '5', '6', '7'];
-  barChartType = 'bar';
-  barChartLegend = true;
-  barChartData: any[] = [{
-    data: [6, 5, 8, 8, 5, 5, 4],
-    label: 'Series A',
-    borderWidth: 0
-  }, {
-    data: [5, 4, 4, 2, 6, 2, 5],
-    label: 'Series B',
-    borderWidth: 0
-  }];
-  barChartOptions: any = Object.assign({
-    scaleShowVerticalLines: false,
-    tooltips: {
-      mode: 'index',
-      intersect: false
-    },
-    responsive: true,
-    scales: {
-      xAxes: [{
-        gridLines: {
-          color: 'rgba(0,0,0,0.02)',
-          defaultFontColor: 'rgba(0,0,0,0.02)',
-          zeroLineColor: 'rgba(0,0,0,0.02)'
-        },
-        stacked: true,
-        ticks: {
-          beginAtZero: true
-        }
-      }],
-      yAxes: [{
-        gridLines: {
-          color: 'rgba(0,0,0,0.02)',
-           defaultFontColor: 'rgba(0,0,0,0.02)',
-          zeroLineColor: 'rgba(0,0,0,0.02)'
-        },
-        stacked: true
-      }]
-    }
-  }, this.globalChartOptions);
-
-  // Bubble Chart
-  bubbleChartData: Array <any> = [{
-    data: [{
-      x: 6,
-      y: 5,
-      r: 15,
-    }, {
-      x: 5,
-      y: 4,
-      r: 10,
-    }, {
-      x: 8,
-      y: 4,
-      r: 6,
-    }, {
-      x: 8,
-      y: 4,
-      r: 6,
-    }, {
-      x: 5,
-      y: 14,
-      r: 14,
-    }, {
-      x: 5,
-      y: 6,
-      r: 8,
-    }, {
-      x: 4,
-      y: 2,
-      r: 10,
-    }],
-    label: 'Series A',
-    borderWidth: 1
-  }];
-  bubbleChartType = 'bubble';
-
-  // combo chart
-  comboChartLabels: Array <any> = ['1', '2', '3', '4', '5', '6', '7'];
-  chartColors: Array <any> = [{ // grey
-    backgroundColor: '#7986cb',
-    borderColor: '#3f51b5',
-    pointBackgroundColor: '#3f51b5',
-    pointBorderColor: '#fff',
-    pointHoverBackgroundColor: '#fff',
-    pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-  }, { // dark grey
-    backgroundColor: '#eeeeee',
-    borderColor: '#e0e0e0',
-    pointBackgroundColor: '#e0e0e0',
-    pointBorderColor: '#fff',
-    pointHoverBackgroundColor: '#fff',
-    pointHoverBorderColor: 'rgba(77,83,96,1)'
-  }, { // grey
-    backgroundColor: 'rgba(148,159,177,0.2)',
-    borderColor: 'rgba(148,159,177,1)',
-    pointBackgroundColor: 'rgba(148,159,177,1)',
-    pointBorderColor: '#fff',
-    pointHoverBackgroundColor: '#fff',
-    pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-  }];
-  comboChartLegend = true;
-  ComboChartData: Array <any> = [{
-    data: [6, 5, 8, 8, 5, 5, 4],
-    label: 'Series A',
-    borderWidth: 1,
-    type: 'line',
-    fill: false
-  }, {
-    data: [5, 4, 4, 2, 6, 2, 5],
-    label: 'Series B',
-    borderWidth: 1,
-    type: 'bar',
-  }];
-  ComboChartOptions: any = Object.assign({
-    animation: false,
-    scales: {
-      xAxes: [{
-        gridLines: {
-          color: 'rgba(0,0,0,0.02)',
-          zeroLineColor: 'rgba(0,0,0,0.02)'
-        }
-      }],
-      yAxes: [{
-        gridLines: {
-          color: 'rgba(0,0,0,0.02)',
-          zeroLineColor: 'rgba(0,0,0,0.02)'
-        },
-        ticks: {
-          beginAtZero: true,
-          suggestedMax: 9,
-        }
-      }]
-    }
-  }, this.globalChartOptions);
-
-  // newsfeed
-  messages: Object[] = [{
-    from: 'Ali Connors',
-    message: 'I will be in your neighborhood',
-    photo: 'assets/images/face3.jpg',
-    subject: 'Brunch this weekend?',
-  }, {
-    from: 'Trevor Hansen',
-    message: 'Wish I could but we have plans',
-    photo: 'assets/images/face6.jpg',
-    subject: 'Brunch this weekend?',
-  }, {
-    from: 'Sandra Adams',
-    message: 'Do you have Paris recommendations instead?',
-    photo: 'assets/images/face4.jpg',
-    subject: 'Brunch this weekend?',
-  }, ];
 
   constructor() {
-    this.fetch((data) => { this.rows = data; });
   }
 
-  // project table
-  fetch(cb) {
-    const req = new XMLHttpRequest();
-    req.open('GET', `assets/data/projects.json`);
-    req.onload = () => {
-      cb(JSON.parse(req.response));
-    };
-    req.send();
+  ngOnInit(): void {
+    const now = new Date();
+    this.minDate = now;
+    this.maxDate = now;
+    this.minDateString = this.transformMin(now);
+    this.maxDateString = this.transformMax(now);
+    this.currentProjectUrl = 'http://172.18.21.40:5601/app/dashboards#/view/3040c120-c032-11eb-99dc-197049818c0a?embed=true&_g=(filters:!(),' +
+      'refreshInterval:(pause:!t,value:0),time:(from:\'2021-02-01T06:53:03.872Z\',to:now))&_a=(description:\'Mockup%201:%20Normal%20Dashboard\',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,syncColors:!f,useMargins:!t),panels:!((embeddableConfig:(enhancements:()),gridData:(h:6,i:\'93660099-4b13-48e9-b243-e8dd13d2dffb\',w:15,x:0,y:0),id:a1b3ae90-c031-11eb-99dc-197049818c0a,panelIndex:\'93660099-4b13-48e9-b243-e8dd13d2dffb\',type:visualization,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-7b7cc4e5-973c-46db-b515-cac7cc6157a0,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:filter-index-pattern-0,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(\'7b7cc4e5-973c-46db-b515-cac7cc6157a0\':(columnOrder:!(\'8368ffbf-9c8f-4438-bd6a-e7162b0b3e12\'),columns:(\'8368ffbf-9c8f-4438-bd6a-e7162b0b3e12\':(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20L%C6%B0%E1%BB%A3ng%20b%E1%BB%87nh%20nh%C3%A2n%20%C4%91i%20kh%C3%A1m\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!((\'$state\':(store:appState),meta:(alias:!n,disabled:!f,indexRefName:filter-index-pattern-0,key:\'@timestamp\',negate:!f,params:(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\'),type:range),range:(\'@timestamp\':(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\')))),query:(language:kuery,query:\'\'),visualization:(accessor:\'8368ffbf-9c8f-4438-bd6a-e7162b0b3e12\',layerId:\'7b7cc4e5-973c-46db-b515-cac7cc6157a0\')),title:\'\',type:lens,visualizationType:lnsMetric),enhancements:(),hidePanelTitles:!f),gridData:(h:6,i:\'649c8019-5967-430a-849b-49eb846efc53\',w:11,x:15,y:0),panelIndex:\'649c8019-5967-430a-849b-49eb846efc53\',title:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20b%C3%AAnh%20nh%C3%A2n%20kh%C3%A1m%20trong%20ng%C3%A0y\',type:lens,version:\'7.12.1\'),(embeddableConfig:(enhancements:()),gridData:(h:6,i:c68e3a6b-8724-45f9-b1de-bbec564d07a2,w:12,x:26,y:0),id:\'99dfbec0-c2a2-11eb-be2c-6f5686b993b5\',panelIndex:c68e3a6b-8724-45f9-b1de-bbec564d07a2,type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-bbf0e47a-1050-40b0-9fca-0dca225c7133,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(bbf0e47a-1050-40b0-9fca-0dca225c7133:(columnOrder:!(\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8cd8cc6c-8872-476b-9c5e-642773b48fe7\'),columns:(\'8b05df69-6131-4eba-86ea-b35d4d211115\':(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20in_out.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(type:alphabetical),orderDirection:asc,otherBucket:!t,size:2),scale:ordinal,sourceField:in_out.keyword),\'8cd8cc6c-8872-476b-9c5e-642773b48fe7\':(dataType:number,isBucketed:!f,label:\'Count%20of%20records\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!(),query:(language:kuery,query:\'\'),visualization:(layers:!((categoryDisplay:default,groups:!(\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\'),layerId:bbf0e47a-1050-40b0-9fca-0dca225c7133,legendDisplay:show,metric:\'8cd8cc6c-8872-476b-9c5e-642773b48fe7\',nestedLegend:!f,numberDisplay:percent)),shape:donut)),title:\'\',type:lens,visualizationType:lnsPie),enhancements:(),hidePanelTitles:!f),gridData:(h:9,i:\'5bae06ed-c6e4-4b93-9648-2566b13a596e\',w:10,x:0,y:6),panelIndex:\'5bae06ed-c6e4-4b93-9648-2566b13a596e\',title:\'T%E1%BB%89%20l%E1%BB%87%20b%E1%BB%87nh%20nh%C3%A2n%20v%C3%A0o%20vi%E1%BB%87n%20v%C3%A0%20ra%20vi%E1%BB%87n%20tr%C3%AAn%20to%C3%A0n%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-ee669fbc-51c5-4ffc-b0ac-93ab0b06d848,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:filter-index-pattern-0,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(ee669fbc-51c5-4ffc-b0ac-93ab0b06d848:(columnOrder:!(\'5006c4d3-5096-49a0-b0b2-5517ef24eb1b\',\'86569f3e-2c52-4617-b108-1945783c74db\',d6fbb79a-57ca-4bb4-9a30-877c819ff9ba),columns:(\'5006c4d3-5096-49a0-b0b2-5517ef24eb1b\':(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20in_out.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(type:alphabetical),orderDirection:asc,otherBucket:!t,size:2),scale:ordinal,sourceField:in_out.keyword),\'86569f3e-2c52-4617-b108-1945783c74db\':(customLabel:!t,dataType:string,isBucketed:!t,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20b%E1%BB%87nh%20nh%C3%A2n%20v%C3%A0o%20vi%E1%BB%87n%20v%C3%A0%20ra%20vi%E1%BB%87n\',operationType:terms,params:(missingBucket:!f,orderBy:(type:alphabetical),orderDirection:asc,otherBucket:!t,size:6),scale:ordinal,sourceField:chi_nhanh.keyword),d6fbb79a-57ca-4bb4-9a30-877c819ff9ba:(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20b%E1%BB%87nh%20nh%C3%A2n\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!((\'$state\':(store:appState),meta:(alias:!n,disabled:!f,indexRefName:filter-index-pattern-0,key:\'@timestamp\',negate:!f,params:(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\'),type:range),range:(\'@timestamp\':(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\')))),query:(language:kuery,query:\'\'),visualization:(axisTitlesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),fittingFunction:None,gridlinesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),layers:!((accessors:!(d6fbb79a-57ca-4bb4-9a30-877c819ff9ba),layerId:ee669fbc-51c5-4ffc-b0ac-93ab0b06d848,position:top,seriesType:bar_stacked,showGridlines:!f,splitAccessor:\'5006c4d3-5096-49a0-b0b2-5517ef24eb1b\',xAccessor:\'86569f3e-2c52-4617-b108-1945783c74db\')),legend:(isVisible:!t,position:right,showSingleSeries:!t),preferredSeriesType:bar_stacked,tickLabelsVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),valueLabels:hide)),title:\'\',type:lens,visualizationType:lnsXY),enhancements:(),hidePanelTitles:!f),gridData:(h:9,i:a4528259-e328-4820-9955-f4fb3cacaf0b,w:28,x:10,y:6),panelIndex:a4528259-e328-4820-9955-f4fb3cacaf0b,title:\'S%E1%BB%91%20b%E1%BB%87nh%20nh%C3%A2n%20ra%20v%C3%A0%20v%C3%A0o%20tr%C3%AAn%20c%C3%A1c%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\'),(embeddableConfig:(enhancements:()),gridData:(h:7,i:\'3badee37-04dd-4af2-85ff-78a8c940335a\',w:10,x:0,y:15),id:\'5f053a80-c281-11eb-be2c-6f5686b993b5\',panelIndex:\'3badee37-04dd-4af2-85ff-78a8c940335a\',type:lens,version:\'7.12.1\'),(embeddableConfig:(enhancements:()),gridData:(h:7,i:\'27677be2-b648-4101-ac41-7a18b26c8a8c\',w:28,x:10,y:15),id:\'13dde110-c281-11eb-be2c-6f5686b993b5\',panelIndex:\'27677be2-b648-4101-ac41-7a18b26c8a8c\',type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-4caf10fc-ce56-4403-86ff-855a93a01480,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(\'4caf10fc-ce56-4403-86ff-855a93a01480\':(columnOrder:!(\'68177d84-0671-4df5-bc96-414a375ffaae\',ab147888-d691-4e76-a7a0-692ec47b8945,\'53c72e30-da02-45ba-a3b9-11e02b9eb059\'),columns:(\'53c72e30-da02-45ba-a3b9-11e02b9eb059\':(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20L%C6%B0%E1%BB%A3ng\',operationType:count,scale:ratio,sourceField:Records),\'68177d84-0671-4df5-bc96-414a375ffaae\':(customLabel:!t,dataType:date,isBucketed:!t,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20x%C3%A9t%20nghi%E1%BB%87m%20theo%20chi%20nh%C3%A1nh\',operationType:date_histogram,params:(interval:\'1d\'),scale:interval,sourceField:\'@timestamp\'),ab147888-d691-4e76-a7a0-692ec47b8945:(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20chi_nhanh.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(columnId:\'53c72e30-da02-45ba-a3b9-11e02b9eb059\',type:column),orderDirection:desc,otherBucket:!t,size:7),scale:ordinal,sourceField:chi_nhanh.keyword)),incompleteColumns:())))),filters:!(),query:(language:kuery,query:\'\'),visualization:(axisTitlesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),fittingFunction:None,gridlinesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),layers:!((accessors:!(\'53c72e30-da02-45ba-a3b9-11e02b9eb059\'),layerId:\'4caf10fc-ce56-4403-86ff-855a93a01480\',position:top,seriesType:bar,showGridlines:!f,splitAccessor:ab147888-d691-4e76-a7a0-692ec47b8945,xAccessor:\'68177d84-0671-4df5-bc96-414a375ffaae\')),legend:(isVisible:!t,position:right),preferredSeriesType:bar,tickLabelsVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),valueLabels:hide)),title:\'\',type:lens,visualizationType:lnsXY),enhancements:(),hidePanelTitles:!f),gridData:(h:7,i:b1125b12-7b3f-4971-bf7e-df6bfd018ee5,w:19,x:0,y:22),panelIndex:b1125b12-7b3f-4971-bf7e-df6bfd018ee5,title:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20x%C3%A9t%20nghi%E1%BB%87m%20theo%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-c3c43228-8d7d-4c74-b24f-3e2950457ba5,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(c3c43228-8d7d-4c74-b24f-3e2950457ba5:(columnOrder:!(ba293fc8-b300-48db-a69a-86a2484c73a8,\'078a4016-0e52-4cab-9e88-73fd9e46510e\',d1056ad6-bcf6-477d-9e12-e45acd831282),columns:(\'078a4016-0e52-4cab-9e88-73fd9e46510e\':(customLabel:!t,dataType:date,isBucketed:!t,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20chu%E1%BA%A9n%20%C4%91o%C3%A1n%20h%C3%ACnh%20%E1%BA%A3nh%20theo%20chi%20nh%C3%A1nh\',operationType:date_histogram,params:(interval:\'1d\'),scale:interval,sourceField:\'@timestamp\'),ba293fc8-b300-48db-a69a-86a2484c73a8:(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20chi_nhanh.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(columnId:d1056ad6-bcf6-477d-9e12-e45acd831282,type:column),orderDirection:desc,otherBucket:!t,size:7),scale:ordinal,sourceField:chi_nhanh.keyword),d1056ad6-bcf6-477d-9e12-e45acd831282:(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20ch%E1%BA%A9n%20%C4%91o%C3%A1n\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!(),query:(language:kuery,query:\'\'),visualization:(axisTitlesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),fittingFunction:None,gridlinesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),layers:!((accessors:!(d1056ad6-bcf6-477d-9e12-e45acd831282),layerId:c3c43228-8d7d-4c74-b24f-3e2950457ba5,position:top,seriesType:bar,showGridlines:!f,splitAccessor:ba293fc8-b300-48db-a69a-86a2484c73a8,xAccessor:\'078a4016-0e52-4cab-9e88-73fd9e46510e\')),legend:(isVisible:!t,position:right),preferredSeriesType:bar,tickLabelsVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),valueLabels:hide)),title:\'\',type:lens,visualizationType:lnsXY),enhancements:(),hidePanelTitles:!f),gridData:(h:7,i:a104be2a-fce9-403f-8062-d5b2d4bf208e,w:19,x:19,y:22),panelIndex:a104be2a-fce9-403f-8062-d5b2d4bf208e,title:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20ch%E1%BA%A9n%20%C4%91o%C3%A1n%20h%C3%ACnh%20%E1%BA%A3nh%20theo%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\')),query:(language:kuery,query:\'\'),tags:!(),' +
+      'timeRestore:!f,title:\'Mockup%201\',viewMode:view)&hide-filter-bar=true';
   }
+
+  // transform date to string :'2021-06-17T17:00:00.000Z'
+  transformMin(date: Date) {
+    return moment(date).format('YYYY-MM-DDT00:00:00.001') + 'Z';
+    // return '2021-02-01T06:53:03.872Z';
+  }
+
+  transformMax(date: Date) {
+    return moment(date).format('YYYY-MM-DDT23:59:59.000') + 'Z';
+  }
+
+  transform() {
+    this.minDateString = this.transformMin(this.minDate);
+    this.maxDateString = this.transformMax(this.maxDate)
+    this.currentProjectUrl = 'http://172.18.21.40:5601/app/dashboards#/view/3040c120-c032-11eb-99dc-197049818c0a?embed=true&_g=(filters:!(),' +
+    'refreshInterval:(pause:!t,value:0),time:(from:\'' + this.minDateString +  '\',to:now))&_a=(description:\'Mockup%201:%20Normal%20Dashboard\',filters:!(),fullScreenMode:!f,options:(hidePanelTitles:!f,syncColors:!f,useMargins:!t),panels:!((embeddableConfig:(enhancements:()),gridData:(h:6,i:\'93660099-4b13-48e9-b243-e8dd13d2dffb\',w:15,x:0,y:0),id:a1b3ae90-c031-11eb-99dc-197049818c0a,panelIndex:\'93660099-4b13-48e9-b243-e8dd13d2dffb\',type:visualization,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-7b7cc4e5-973c-46db-b515-cac7cc6157a0,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:filter-index-pattern-0,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(\'7b7cc4e5-973c-46db-b515-cac7cc6157a0\':(columnOrder:!(\'8368ffbf-9c8f-4438-bd6a-e7162b0b3e12\'),columns:(\'8368ffbf-9c8f-4438-bd6a-e7162b0b3e12\':(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20L%C6%B0%E1%BB%A3ng%20b%E1%BB%87nh%20nh%C3%A2n%20%C4%91i%20kh%C3%A1m\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!((\'$state\':(store:appState),meta:(alias:!n,disabled:!f,indexRefName:filter-index-pattern-0,key:\'@timestamp\',negate:!f,params:(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\'),type:range),range:(\'@timestamp\':(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\')))),query:(language:kuery,query:\'\'),visualization:(accessor:\'8368ffbf-9c8f-4438-bd6a-e7162b0b3e12\',layerId:\'7b7cc4e5-973c-46db-b515-cac7cc6157a0\')),title:\'\',type:lens,visualizationType:lnsMetric),enhancements:(),hidePanelTitles:!f),gridData:(h:6,i:\'649c8019-5967-430a-849b-49eb846efc53\',w:11,x:15,y:0),panelIndex:\'649c8019-5967-430a-849b-49eb846efc53\',title:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20b%C3%AAnh%20nh%C3%A2n%20kh%C3%A1m%20trong%20ng%C3%A0y\',type:lens,version:\'7.12.1\'),(embeddableConfig:(enhancements:()),gridData:(h:6,i:c68e3a6b-8724-45f9-b1de-bbec564d07a2,w:12,x:26,y:0),id:\'99dfbec0-c2a2-11eb-be2c-6f5686b993b5\',panelIndex:c68e3a6b-8724-45f9-b1de-bbec564d07a2,type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-bbf0e47a-1050-40b0-9fca-0dca225c7133,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(bbf0e47a-1050-40b0-9fca-0dca225c7133:(columnOrder:!(\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8cd8cc6c-8872-476b-9c5e-642773b48fe7\'),columns:(\'8b05df69-6131-4eba-86ea-b35d4d211115\':(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20in_out.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(type:alphabetical),orderDirection:asc,otherBucket:!t,size:2),scale:ordinal,sourceField:in_out.keyword),\'8cd8cc6c-8872-476b-9c5e-642773b48fe7\':(dataType:number,isBucketed:!f,label:\'Count%20of%20records\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!(),query:(language:kuery,query:\'\'),visualization:(layers:!((categoryDisplay:default,groups:!(\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\',\'8b05df69-6131-4eba-86ea-b35d4d211115\'),layerId:bbf0e47a-1050-40b0-9fca-0dca225c7133,legendDisplay:show,metric:\'8cd8cc6c-8872-476b-9c5e-642773b48fe7\',nestedLegend:!f,numberDisplay:percent)),shape:donut)),title:\'\',type:lens,visualizationType:lnsPie),enhancements:(),hidePanelTitles:!f),gridData:(h:9,i:\'5bae06ed-c6e4-4b93-9648-2566b13a596e\',w:10,x:0,y:6),panelIndex:\'5bae06ed-c6e4-4b93-9648-2566b13a596e\',title:\'T%E1%BB%89%20l%E1%BB%87%20b%E1%BB%87nh%20nh%C3%A2n%20v%C3%A0o%20vi%E1%BB%87n%20v%C3%A0%20ra%20vi%E1%BB%87n%20tr%C3%AAn%20to%C3%A0n%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-ee669fbc-51c5-4ffc-b0ac-93ab0b06d848,type:index-pattern),(id:\'156d22e0-c29d-11eb-be2c-6f5686b993b5\',name:filter-index-pattern-0,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(ee669fbc-51c5-4ffc-b0ac-93ab0b06d848:(columnOrder:!(\'5006c4d3-5096-49a0-b0b2-5517ef24eb1b\',\'86569f3e-2c52-4617-b108-1945783c74db\',d6fbb79a-57ca-4bb4-9a30-877c819ff9ba),columns:(\'5006c4d3-5096-49a0-b0b2-5517ef24eb1b\':(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20in_out.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(type:alphabetical),orderDirection:asc,otherBucket:!t,size:2),scale:ordinal,sourceField:in_out.keyword),\'86569f3e-2c52-4617-b108-1945783c74db\':(customLabel:!t,dataType:string,isBucketed:!t,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20b%E1%BB%87nh%20nh%C3%A2n%20v%C3%A0o%20vi%E1%BB%87n%20v%C3%A0%20ra%20vi%E1%BB%87n\',operationType:terms,params:(missingBucket:!f,orderBy:(type:alphabetical),orderDirection:asc,otherBucket:!t,size:6),scale:ordinal,sourceField:chi_nhanh.keyword),d6fbb79a-57ca-4bb4-9a30-877c819ff9ba:(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20b%E1%BB%87nh%20nh%C3%A2n\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!((\'$state\':(store:appState),meta:(alias:!n,disabled:!f,indexRefName:filter-index-pattern-0,key:\'@timestamp\',negate:!f,params:(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\'),type:range),range:(\'@timestamp\':(gte:\'2021-04-01T00:00:00.000%2B07:00\',lt:\'2021-06-01T00:00:00.000%2B07:00\')))),query:(language:kuery,query:\'\'),visualization:(axisTitlesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),fittingFunction:None,gridlinesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),layers:!((accessors:!(d6fbb79a-57ca-4bb4-9a30-877c819ff9ba),layerId:ee669fbc-51c5-4ffc-b0ac-93ab0b06d848,position:top,seriesType:bar_stacked,showGridlines:!f,splitAccessor:\'5006c4d3-5096-49a0-b0b2-5517ef24eb1b\',xAccessor:\'86569f3e-2c52-4617-b108-1945783c74db\')),legend:(isVisible:!t,position:right,showSingleSeries:!t),preferredSeriesType:bar_stacked,tickLabelsVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),valueLabels:hide)),title:\'\',type:lens,visualizationType:lnsXY),enhancements:(),hidePanelTitles:!f),gridData:(h:9,i:a4528259-e328-4820-9955-f4fb3cacaf0b,w:28,x:10,y:6),panelIndex:a4528259-e328-4820-9955-f4fb3cacaf0b,title:\'S%E1%BB%91%20b%E1%BB%87nh%20nh%C3%A2n%20ra%20v%C3%A0%20v%C3%A0o%20tr%C3%AAn%20c%C3%A1c%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\'),(embeddableConfig:(enhancements:()),gridData:(h:7,i:\'3badee37-04dd-4af2-85ff-78a8c940335a\',w:10,x:0,y:15),id:\'5f053a80-c281-11eb-be2c-6f5686b993b5\',panelIndex:\'3badee37-04dd-4af2-85ff-78a8c940335a\',type:lens,version:\'7.12.1\'),(embeddableConfig:(enhancements:()),gridData:(h:7,i:\'27677be2-b648-4101-ac41-7a18b26c8a8c\',w:28,x:10,y:15),id:\'13dde110-c281-11eb-be2c-6f5686b993b5\',panelIndex:\'27677be2-b648-4101-ac41-7a18b26c8a8c\',type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-4caf10fc-ce56-4403-86ff-855a93a01480,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(\'4caf10fc-ce56-4403-86ff-855a93a01480\':(columnOrder:!(\'68177d84-0671-4df5-bc96-414a375ffaae\',ab147888-d691-4e76-a7a0-692ec47b8945,\'53c72e30-da02-45ba-a3b9-11e02b9eb059\'),columns:(\'53c72e30-da02-45ba-a3b9-11e02b9eb059\':(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20L%C6%B0%E1%BB%A3ng\',operationType:count,scale:ratio,sourceField:Records),\'68177d84-0671-4df5-bc96-414a375ffaae\':(customLabel:!t,dataType:date,isBucketed:!t,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20x%C3%A9t%20nghi%E1%BB%87m%20theo%20chi%20nh%C3%A1nh\',operationType:date_histogram,params:(interval:\'1d\'),scale:interval,sourceField:\'@timestamp\'),ab147888-d691-4e76-a7a0-692ec47b8945:(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20chi_nhanh.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(columnId:\'53c72e30-da02-45ba-a3b9-11e02b9eb059\',type:column),orderDirection:desc,otherBucket:!t,size:7),scale:ordinal,sourceField:chi_nhanh.keyword)),incompleteColumns:())))),filters:!(),query:(language:kuery,query:\'\'),visualization:(axisTitlesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),fittingFunction:None,gridlinesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),layers:!((accessors:!(\'53c72e30-da02-45ba-a3b9-11e02b9eb059\'),layerId:\'4caf10fc-ce56-4403-86ff-855a93a01480\',position:top,seriesType:bar,showGridlines:!f,splitAccessor:ab147888-d691-4e76-a7a0-692ec47b8945,xAccessor:\'68177d84-0671-4df5-bc96-414a375ffaae\')),legend:(isVisible:!t,position:right),preferredSeriesType:bar,tickLabelsVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),valueLabels:hide)),title:\'\',type:lens,visualizationType:lnsXY),enhancements:(),hidePanelTitles:!f),gridData:(h:7,i:b1125b12-7b3f-4971-bf7e-df6bfd018ee5,w:19,x:0,y:22),panelIndex:b1125b12-7b3f-4971-bf7e-df6bfd018ee5,title:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20x%C3%A9t%20nghi%E1%BB%87m%20theo%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\'),(embeddableConfig:(attributes:(references:!((id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-current-indexpattern,type:index-pattern),(id:\'06c01570-c286-11eb-be2c-6f5686b993b5\',name:indexpattern-datasource-layer-c3c43228-8d7d-4c74-b24f-3e2950457ba5,type:index-pattern)),state:(datasourceStates:(indexpattern:(layers:(c3c43228-8d7d-4c74-b24f-3e2950457ba5:(columnOrder:!(ba293fc8-b300-48db-a69a-86a2484c73a8,\'078a4016-0e52-4cab-9e88-73fd9e46510e\',d1056ad6-bcf6-477d-9e12-e45acd831282),columns:(\'078a4016-0e52-4cab-9e88-73fd9e46510e\':(customLabel:!t,dataType:date,isBucketed:!t,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20chu%E1%BA%A9n%20%C4%91o%C3%A1n%20h%C3%ACnh%20%E1%BA%A3nh%20theo%20chi%20nh%C3%A1nh\',operationType:date_histogram,params:(interval:\'1d\'),scale:interval,sourceField:\'@timestamp\'),ba293fc8-b300-48db-a69a-86a2484c73a8:(dataType:string,isBucketed:!t,label:\'Top%20values%20of%20chi_nhanh.keyword\',operationType:terms,params:(missingBucket:!f,orderBy:(columnId:d1056ad6-bcf6-477d-9e12-e45acd831282,type:column),orderDirection:desc,otherBucket:!t,size:7),scale:ordinal,sourceField:chi_nhanh.keyword),d1056ad6-bcf6-477d-9e12-e45acd831282:(customLabel:!t,dataType:number,isBucketed:!f,label:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20ch%E1%BA%A9n%20%C4%91o%C3%A1n\',operationType:count,scale:ratio,sourceField:Records)),incompleteColumns:())))),filters:!(),query:(language:kuery,query:\'\'),visualization:(axisTitlesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),fittingFunction:None,gridlinesVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),layers:!((accessors:!(d1056ad6-bcf6-477d-9e12-e45acd831282),layerId:c3c43228-8d7d-4c74-b24f-3e2950457ba5,position:top,seriesType:bar,showGridlines:!f,splitAccessor:ba293fc8-b300-48db-a69a-86a2484c73a8,xAccessor:\'078a4016-0e52-4cab-9e88-73fd9e46510e\')),legend:(isVisible:!t,position:right),preferredSeriesType:bar,tickLabelsVisibilitySettings:(x:!t,yLeft:!t,yRight:!t),valueLabels:hide)),title:\'\',type:lens,visualizationType:lnsXY),enhancements:(),hidePanelTitles:!f),gridData:(h:7,i:a104be2a-fce9-403f-8062-d5b2d4bf208e,w:19,x:19,y:22),panelIndex:a104be2a-fce9-403f-8062-d5b2d4bf208e,title:\'S%E1%BB%91%20l%C6%B0%E1%BB%A3ng%20ch%E1%BA%A9n%20%C4%91o%C3%A1n%20h%C3%ACnh%20%E1%BA%A3nh%20theo%20chi%20nh%C3%A1nh\',type:lens,version:\'7.12.1\')),query:(language:kuery,query:\'\'),tags:!(),' +
+    'timeRestore:!f,title:\'Mockup%201\',viewMode:view)&hide-filter-bar=true';
+    console.log(this.currentProjectUrl);
+  }
+
 }

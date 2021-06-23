@@ -1,0 +1,36 @@
+import {Patient} from '../patient';
+import {Guarantor} from './guarantor';
+import {PaymentType} from './payment-type';
+export class Receipt extends Patient {
+  amount_reduction: number;
+  created_at: number;
+  created_by: string;
+  final_price: number;
+  guarantor: Guarantor[];
+  note: string;
+  note_post_paid: string;
+  note_reduction: string;
+  patient_fullname: string;
+  patient_id: number;
+  patient_pay: number;
+  patient_pay_card: number;
+  patient_pay_cash: number;
+  patient_receive: number;
+  payment_status: number;
+  payment_type: PaymentType;
+  percent_reduction: number;
+  quantity_cancelled: boolean;
+  receipt_cancelled_id: number;
+  receipt_cancelled_object_id: number;
+  receipt_category_id: number;
+  receipt_id: string;
+  receipt_type: boolean;
+  receipt_type_name: string;
+  reception_queue_id: string;
+  reduction: string;
+  reduction_type: string;
+  room_id: number;
+  room_name: string;
+  updated_at: any;
+  updated_by: string;
+}
